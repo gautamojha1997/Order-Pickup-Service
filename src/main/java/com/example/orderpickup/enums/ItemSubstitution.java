@@ -1,5 +1,5 @@
 package com.example.orderpickup.enums;
 
 public enum ItemSubstitution {
-    YES, NO
+    ALLOWED, NOT_ALLOWED
 }

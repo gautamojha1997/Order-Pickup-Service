@@ -1,0 +1,40 @@
+# Server details
+server:
+  port: 8080
+  shutdown: graceful
+
+
+# Spring Configuration
+spring:
+  profiles:
+    active: local
+  application:
+    name: order-pickup-application
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      client-id: PickupClient
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 5
+      batch-size: 16384
+      buffer-memory: 33554432
+      linger-ms: 300
+      enable-Idempotence: true
+      transactionalId: PickUpTransId
+    consumer:
+      bootstrap-servers: localhost:9092
+      client-id: PickupClient
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      isolationLevel: read_committed
+      max-poll-records: 15
+      heartbeat-interval: 5000
+
+
+kafka:
+  topic:
+    name: order-pickup-app
+    groupId: pickup-group

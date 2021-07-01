@@ -1,9 +1,6 @@
 package com.example.orderpickup.exceptions.handler;
 
-import com.example.orderpickup.exceptions.BatchOrderRequiredException;
-import com.example.orderpickup.exceptions.LocationNotFoundException;
-import com.example.orderpickup.exceptions.PickupNotFoundException;
-import com.example.orderpickup.exceptions.SingleOrderRequiredException;
+import com.example.orderpickup.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +40,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handlePickupNotFoundException(PickupNotFoundException exception, WebRequest request){
         ErrorResponse errorResponse = new ErrorResponse(new Date(), exception.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    //handle EmployeeBeingAssignedException
+    @ExceptionHandler(EmployeeBeingAssignedException.class)
+    public ResponseEntity<Object> handleEmployeeBeingAssignedException(EmployeeBeingAssignedException exception, WebRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     //handle global exception

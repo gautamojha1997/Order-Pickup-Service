@@ -1,4 +1,4 @@
-package com.example.orderpickup.configuration;
+package com.example.orderpickup.configuration.Swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.example.orderpickup.service;
+package com.example.orderpickup.service.pickup;
 
 import com.example.orderpickup.dtos.PickupDto;
 import com.example.orderpickup.enums.Status;
@@ -19,10 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static org.springframework.transaction.annotation.Isolation.REPEATABLE_READ;
+
 @Service
 @Transactional
 @Slf4j
-public class PickupServiceImpl implements PickupService{
+public class PickupServiceImpl implements PickupService {
 
     @Autowired
     PickupRepository pickupRepository;
@@ -58,6 +60,7 @@ public class PickupServiceImpl implements PickupService{
      * @return single picking.
      **/
     @Override
+    @Transactional(isolation = REPEATABLE_READ) //handling concurrent request to create single pickings by multiple client
     public PickupDto createSinglePicking(PickupDto pickupDto) {
         if(pickupDto.getOrdersList().size()>1)
             throw new SingleOrderRequiredException("Single Picking requires only single order!");
@@ -93,6 +96,8 @@ public class PickupServiceImpl implements PickupService{
     @Override
     public List<PickupDto> getAllBatchPicking() {
         List<Pickup> pickupAllList = pickupRepository.findAll();
+        if(pickupAllList.isEmpty())
+            throw new PickupNotFoundException("Pickings Are Empty");
         List<Pickup> batchPickupList = new ArrayList<>();
         for(Pickup pickup: pickupAllList){
             if(pickup.getOrdersList().size() > 1)
@@ -112,6 +117,7 @@ public class PickupServiceImpl implements PickupService{
      * @return batch picking.
      **/
     @Override
+    @Transactional(isolation = REPEATABLE_READ) //handling concurrent request to create batch pickings by multiple client
     public PickupDto createBatchPicking(PickupDto pickupDto) {
         if(pickupDto.getOrdersList().size()==1)
             throw new BatchOrderRequiredException("For Batch Picking you need multiple orders!!");
@@ -142,6 +148,8 @@ public class PickupServiceImpl implements PickupService{
         //Get All Single PickUps List
         log.info("Entered Service single to batch with location = " + location + "and batchSize = " + batchSize);
         List<Pickup> pickupAllList = pickupRepository.findAll();
+        if(pickupAllList.isEmpty())
+            throw new PickupNotFoundException("Pickings Are Empty");
         List<Pickup> singlePickupList = new ArrayList<>();
         for(Pickup p: pickupAllList){
             if(p.getOrdersList().size() == 1)
@@ -223,6 +231,8 @@ public class PickupServiceImpl implements PickupService{
     @Override
     public List<PickupDto> batchToSingle(){
         List<Pickup> pickupAllList = pickupRepository.findAll();
+        if(pickupAllList.isEmpty())
+            throw new PickupNotFoundException("Pickings Are Empty");
         List<Pickup> batchPickupList = new ArrayList<>();
         for(Pickup pickup: pickupAllList){
             if(pickup.getOrdersList().size() > 1)
@@ -230,19 +240,22 @@ public class PickupServiceImpl implements PickupService{
         }
 
         List<Pickup> singlePickups = new ArrayList<>();
-        log.info(String.valueOf(batchPickupList));
+        //log.info(String.valueOf(batchPickupList));
 
         for(Pickup p : batchPickupList){
             Pickup pickup;
             if(p.getStatus()!=Status.COMPLETE||p.getStatus()!=Status.CANCELED){
-                pickup = p;
+
+                //pickup = p;
                 List<Orders> l = p.getOrdersList();
                 for(int i = 0; i < l.size(); i++){
+                    pickup = new Pickup();
                     pickup.setOrdersList(Collections.singletonList(l.get(i)));
                     pickup.setStatus(Status.PENDING);
+                    pickupRepository.save(pickup);
                     singlePickups.add(pickup);
                 }
-                //p.setStatus(Status.CANCELED);
+                p.setStatus(Status.CANCELED);
             }
         }
 

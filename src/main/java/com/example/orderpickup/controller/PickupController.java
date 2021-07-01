@@ -1,12 +1,15 @@
 package com.example.orderpickup.controller;
 
 import com.example.orderpickup.dtos.PickupDto;
-import com.example.orderpickup.service.PickupService;
+import com.example.orderpickup.exceptions.EmployeeBeingAssignedException;
+import com.example.orderpickup.service.kafka.ProducerService;
+import com.example.orderpickup.service.pickup.PickupService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,9 @@ public class PickupController {
 
     @Autowired
     private PickupService pickupService;
+
+    @Autowired
+    private ProducerService producerService;
 
     @GetMapping(value = "/single")
     @ApiOperation(value  = "Returns list of all single pickings!!")
@@ -34,7 +40,11 @@ public class PickupController {
     })
     @PostMapping(value = "/single/create")
     public ResponseEntity<PickupDto> createSinglePicking(@RequestBody PickupDto pickupDto){
-        return ResponseEntity.ok(pickupService.createSinglePicking(pickupDto));
+        try{
+            return ResponseEntity.ok(pickupService.createSinglePicking(pickupDto));
+        }catch(OptimisticLockingFailureException e){
+            throw new EmployeeBeingAssignedException("The employee you are trying to assign is already assigned or been assigned");
+        }
     }
 
     @ApiOperation(value  = "Cancel single picking")
@@ -61,7 +71,12 @@ public class PickupController {
     })
     @PostMapping(value = "/batch/create")
     public ResponseEntity<PickupDto> createBatchPicking(@RequestBody PickupDto pickupDto){
-        return ResponseEntity.ok(pickupService.createBatchPicking(pickupDto));
+        try{
+            return ResponseEntity.ok(pickupService.createBatchPicking(pickupDto));
+        }catch(Exception e){
+            throw new EmployeeBeingAssignedException("The employee you are trying to assign is already assigned or been assigned");
+        }
+
     }
 
     @ApiOperation(value  = "Cancel batch picking")
@@ -92,6 +107,14 @@ public class PickupController {
     @GetMapping(value = "/batch/single/")
     public ResponseEntity<List<PickupDto>> batchToSingle(){
         return ResponseEntity.ok(pickupService.batchToSingle());
+    }
+
+    //Kafka send message when pickup is done
+    @PostMapping(value = "/publish/pickup")
+    public String publishPickupDone(@RequestBody PickupDto pickupDto){
+        log.info("Order Message received in KafkaController: {}", pickupDto);
+        producerService.sendPickupDoneMessage(pickupDto);
+        return "Picking Done";
     }
 
 }

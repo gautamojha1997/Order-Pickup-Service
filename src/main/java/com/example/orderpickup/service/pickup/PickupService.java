@@ -1,4 +1,4 @@
-package com.example.orderpickup.service;
+package com.example.orderpickup.service.pickup;
 
 import com.example.orderpickup.dtos.PickupDto;
 
