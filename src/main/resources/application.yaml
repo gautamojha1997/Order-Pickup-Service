@@ -30,8 +30,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       auto-offset-reset: earliest
       isolationLevel: read_committed
-      max-poll-records: 15
-      heartbeat-interval: 5000
+      max-poll-records: 30
+      heartbeat-interval: 15000
 
 
 kafka:
