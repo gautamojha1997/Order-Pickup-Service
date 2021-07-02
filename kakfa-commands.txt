@@ -1,0 +1,12 @@
+## To start Zookeeper
+bin\zookeeper-server-start.sh config\zookeeper.properties
+
+## To start Kafka
+bin\kafka-server-start.sh config\server.properties
+
+## To create topics
+bin\kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic order-pickup-app-
+bin\kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3 --topic order-pickup-app-
+
+## To list topics
+bin\kafka-topics.sh --list --bootstrap-server localhost:9092
