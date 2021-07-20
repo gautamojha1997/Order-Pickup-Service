@@ -51,7 +51,7 @@ public class Pickup {
     @OneToMany(cascade = {CascadeType.ALL})
     private List<ToteCart> toteCarts;
 
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinColumn(name = "emp_perf_id")
     private EmployeePerformance employeePerformance;
 

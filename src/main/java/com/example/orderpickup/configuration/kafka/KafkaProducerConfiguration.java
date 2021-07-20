@@ -72,8 +72,8 @@ public class KafkaProducerConfiguration {
         DefaultKafkaProducerFactory<String, PickupDto> factory = new DefaultKafkaProducerFactory<>(configProps);
 
         if(transactionalId != null){
-            factory.setTransactionIdPrefix(transactionalId + "_" + InetAddress.getLocalHost().getHostName());
-            factory.setProducerPerConsumerPartition(false);
+            factory.setTransactionIdPrefix(transactionalId + "_" + InetAddress.getLocalHost().getHostName());//Set the transactional.id prefix.
+            factory.setProducerPerConsumerPartition(false); //Set to false to revert to the previous behavior of a simple incrementing trasactional.id suffix for each producer instead of maintaining a producer for each group/topic/partition.
         }
 
         return factory;

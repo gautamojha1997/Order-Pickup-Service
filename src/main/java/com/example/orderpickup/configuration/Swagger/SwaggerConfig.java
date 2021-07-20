@@ -17,11 +17,12 @@ public class SwaggerConfig {
      * */
 
     @Bean
+    //Springfox’s, primary api configuration mechanism is initialized for swagger specification 2.0
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build();
+                .select() //returns an instance of ApiSelectorBuilder
+                .apis(RequestHandlerSelectors.any()) //allows selection of RequestHandler's using a predicate
+                .paths(PathSelectors.any()) //allows selection of Path's using a predicate
+                .build(); //built after configuring the api and path selectors
     }
 }
