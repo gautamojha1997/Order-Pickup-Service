@@ -2,6 +2,27 @@
 The Project follows microservice architecture for developing a full Ecommerce Service, I have implemented order picking 
 microservice.
 
+
+## Project Problem Definition 
+
+- You are part of a team that is planning to migrate a monolithic ecommerce platform from a legacy
+database engine with an outdated schema to a more modern database engine
+with an extensible schema and implement enhancements.
+
+- At the same time, your team has decided to follow a microservice architecture where you can back the appropriate database domains with
+Spring Boot based microservices (RESTful or otherwise).
+  
+
+- A modern ecommerce platform can have many sets of microservices: customer, order, product, inventory, payment, picking, shipping/delivery etc.
+
+- Order picking is a process of finding products from warehouses or distribution centers to fulfill
+customer orders and is associated along with packing and delivery in any order processing system.
+  
+## Architecture 
+
+![Architecture](architecture.JPG)
+
+
 ## DB Design / ER Diagram 
 
 ![DB Schema](db%20Schema.png)
